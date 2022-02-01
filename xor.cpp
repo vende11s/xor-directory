@@ -6,24 +6,19 @@
 
     #include <windows.h>
 
-    void gotoxy(int x, int y)
+    bool gotoxy(int x, int y)
     {
-        COORD p = { x, y };
+        if (x == -69)return true;
+        COORD p = { x, y+increase_y };
         SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), p);
+        return true;
     }
 
 #else
 
-    #include <unistd.h>
-    #include <term.h>
-
-    void gotoxy(int x, int y)
+    bool gotoxy(int x, int y)
     {
-        int err;
-        if (!cur_term)
-            if (setupterm(NULL, STDOUT_FILENO, &err) == ERR)
-                return;
-       putp(tparm(tigetstr("cup"), y, x, 0, 0, 0, 0, 0, 0, 0));
+        return false;
     }
 
 #endif 
@@ -31,11 +26,13 @@
 
 using namespace std;
 
-string xoro(string data, string key) {
-    string output = "";
+void xoro(string& data, string key) {
     int size = data.size();
 
     for (long long i = 0; i < size; i++) {
+<<<<<<< HEAD
+        data[i] ^= key[i % key.size()];
+=======
 
         output += data[i] ^ key[i % key.size()];
         long long percent = (i * 100) / size;
@@ -45,21 +42,21 @@ string xoro(string data, string key) {
             refresh(percent, 9, 3, "%");
             last_percent = percent;
         }
+>>>>>>> 4639f51073205a738b722c1d7cb71f66e988e3a3
     }
-
-    return output;
 }
 
 void xor_file(string path, string key) {
-    gotoxy(0, 3);
-    cout << "reading...  ";
+    if(gotoxy(0, 3))
+    cout << "reading...";
 
     ifstream ifs(path, ios::binary);
     string s((istreambuf_iterator<char>(ifs)), (istreambuf_iterator<char>()));
 
-    for (int i = 0; i < 13; i++)cout << "\b";
-    cout << "xoring...0%";
-    s = xoro(s, key);
+    if(gotoxy(0,3))
+    cout << "xoring... ";
+    
+    xoro(s, key);
 
     ofstream ofs;
     ofs.open(path, ofstream::out | ofstream::trunc | ios::binary);
@@ -69,6 +66,8 @@ void xor_file(string path, string key) {
 }
 
 void refresh(int a, int x, int y, string message) {
+    if (!gotoxy(-69, y))return;
+
     int lenght = 0;
     static int last_lenght(1);
 
@@ -82,8 +81,6 @@ void refresh(int a, int x, int y, string message) {
     }
 
     x += lenght;
-
-    gotoxy(x, y);
 
     for (int i = 0; i < lenght; i++)cout << "\b";
     cout << a;
