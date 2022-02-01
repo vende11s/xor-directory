@@ -30,11 +30,9 @@ void xoro(string& data, string key) {
     int size = data.size();
 
     for (long long i = 0; i < size; i++) {
-<<<<<<< HEAD
         data[i] ^= key[i % key.size()];
-=======
 
-        output += data[i] ^ key[i % key.size()];
+        data[i] ^= key[i % key.size()];
         long long percent = (i * 100) / size;
         static long long last_percent(0);
 
@@ -42,7 +40,6 @@ void xoro(string& data, string key) {
             refresh(percent, 9, 3, "%");
             last_percent = percent;
         }
->>>>>>> 4639f51073205a738b722c1d7cb71f66e988e3a3
     }
 }
 
